@@ -43,6 +43,7 @@
             radioButton1 = new RadioButton();
             radioButton2 = new RadioButton();
             radioButton3 = new RadioButton();
+            openFileDialog1 = new OpenFileDialog();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -214,6 +215,11 @@
             radioButton3.UseVisualStyleBackColor = true;
             radioButton3.CheckedChanged += radioButton3_CheckedChanged;
             // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            openFileDialog1.FileOk += openFileDialog1_FileOk;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -259,5 +265,6 @@
         private RadioButton radioButton1;
         private RadioButton radioButton2;
         private RadioButton radioButton3;
+        private OpenFileDialog openFileDialog1;
     }
 }

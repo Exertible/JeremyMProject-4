@@ -1,5 +1,7 @@
-//Jeremy Mohan Kalawan ICA 5
+//Jeremy Mohan Kalawan ICA 6
+using Microsoft.VisualBasic;
 using System.CodeDom;
+using System.Windows.Forms;
 
 namespace JeremyMProject_4
 {
@@ -9,6 +11,31 @@ namespace JeremyMProject_4
         const string RPG = "Role Playing Game (RPG)";
         const string FPS = "First Person Shooter (FPS)";
         const string Racing = "Racing";
+
+        private double rpgDiscount;
+        private double fpsDiscount;
+        private double racingDiscount;
+        private string GameConfig = "GameConfig.txt";
+
+        public double RPGDiscount
+        {
+            get { return rpgDiscount; }
+            set { rpgDiscount = value; }
+        }
+
+        public double FPSDiscount
+        {
+            get { return fpsDiscount; }
+            set { fpsDiscount = value; }
+        }
+
+        public double RacingDiscount
+        {
+            get { return racingDiscount;}
+            set { racingDiscount = value; }
+        }
+          
+    
         public Form1()
         {
             InitializeComponent();
@@ -19,11 +46,11 @@ namespace JeremyMProject_4
             btnCalc.Focus();
 
             // Variables
-            double GamePrice, totalGamePrice;
+            double GamePrice, totalGamePrice, discountedGamePrice, GameGenreDiscount;
             int GameQuantity;
             bool PriceValid, QuantityValid;
             string GameName;
-            double GameGenreDiscount = 0;
+          
 
             // Input & Parsing
             // GamePrice = double.Parse(txtPrice.Text);
@@ -37,15 +64,15 @@ namespace JeremyMProject_4
                 switch (GameGenre)
                 {
                     case RPG:
-                        GameGenreDiscount = 0.25;
+                        GameGenreDiscount = RPGDiscount;
                         break;
 
                     case FPS:
-                        GameGenreDiscount = 0.50;
+                        GameGenreDiscount = FPSDiscount;
                         break;
-                    
+
                     case Racing:
-                        GameGenreDiscount = 0.75;
+                        GameGenreDiscount = RacingDiscount;
                         break;
 
                     default:
@@ -53,13 +80,17 @@ namespace JeremyMProject_4
                         break;
                 }
                 // Processing
-                totalGamePrice = (GamePrice * GameGenreDiscount) * GameQuantity;
+                discountedGamePrice = GamePrice - (GamePrice * GameGenreDiscount);
+                totalGamePrice = discountedGamePrice * GameQuantity;
 
                 // Output
+                lstOutput.Items.Add("GamePrice: " + GamePrice.ToString("C2"));
+                lstOutput.Items.Add("Quantity: " + GameQuantity);
                 lstOutput.Items.Add("Your discount is " + GameGenreDiscount.ToString("P0"));
+                lstOutput.Items.Add("Discounted Game Price: " + discountedGamePrice.ToString("C2"));
                 lstOutput.Items.Add("The total price for " + GameName + " is " + totalGamePrice.ToString("C2"));
             }
-            
+
             else
             {
                 if (!PriceValid)
@@ -137,6 +168,40 @@ namespace JeremyMProject_4
         private void Form1_Load(object sender, EventArgs e)
         {
             radioButton1.Checked = true;
+            StreamReader reader;
+            bool valValid;
+            bool valNotValid = true;
+            double tempValue;
+            do
+            {
+                try
+                {
+                    reader = File.OpenText(GameConfig);
+                    valNotValid = false;
+                    valValid = double.TryParse(reader.ReadLine(), out tempValue);
+                    RPGDiscount = tempValue;
+
+                    valValid = double.TryParse(reader.ReadLine(), out tempValue);
+                    FPSDiscount = tempValue;
+
+                    valValid = double.TryParse(reader.ReadLine(), out tempValue);
+                    RacingDiscount = tempValue;
+
+                    reader.Close();
+                }
+                catch (FileNotFoundException ex)
+                {
+                    MessageBox.Show("The configuration file was not found. Please select a different file. \n Error message was: " +
+                        ex.Message
+                        );
+                    openFileDialog1.InitialDirectory = Application.StartupPath;
+                    openFileDialog1.ShowDialog();
+                    GameConfig = openFileDialog1.FileName;
+                }
+            } while (valNotValid);
+
+
+
         }
 
         private void RPG_CheckedChanged(object sender, EventArgs e)
@@ -166,6 +231,11 @@ namespace JeremyMProject_4
             {
                 GameGenre = Racing;
             }
+        }
+
+        private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
         }
     }
 }
